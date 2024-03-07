@@ -5,6 +5,8 @@ import com.sun.nio.sctp.SctpChannel;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -19,7 +21,8 @@ public class PersonalInformation {
             System.out.println("Введите данные (не разделяя запятой) Фамилия Имя Отчество дата рождения номер телефона пол:");
             String input = scanner.nextLine();
 
-            String[] data = input.split(" ");
+            String[] data = new String[]{input.replaceAll(",", "")};
+            data = input.split(" ");
             if (data.length != 6) {
                 System.out.println("Введено неверное количество данных. Пожалуйста, введите 6 значений.");
                 return;
@@ -28,9 +31,9 @@ public class PersonalInformation {
             String lastName = data[0];
             String firstName = data[1];
             String middleName = data[2];
-            LocalDate dateOfBirth;
+            String dateBirth = data[3];
             try {
-                dateOfBirth = LocalDate.parse(data[3]);
+                isDateValid(dateBirth);
             } catch (DateTimeParseException e) {
                 System.out.println("Неверный формат даты рождения. Используйте формат yyyy-mm-dd");
                 return;
@@ -52,7 +55,7 @@ public class PersonalInformation {
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
 
                 String output = lastName + " " + firstName + " " + middleName + " " +
-                        dateOfBirth + " " +
+                        data[3] + " " +
                         phoneNumber + " " + gender;
                 writer.write(output);
                 writer.newLine();
@@ -66,5 +69,19 @@ public class PersonalInformation {
             e.printStackTrace();
         }
     }
+
+    public static boolean isDateValid(String date) {
+
+        SimpleDateFormat myFormat = new SimpleDateFormat("dd.MM.yyyy");
+        myFormat.setLenient(false);
+        try {
+            myFormat.parse(date);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+
+    }
 }
+
 
